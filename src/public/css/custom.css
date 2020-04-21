@@ -1,0 +1,13 @@
+.description {
+    width: 85%;
+}
+
+.actions {
+    width:15%;
+    text-align: right;
+}
+
+td span.finished {
+    text-decoration: line-through;
+    color: #aaa;
+}

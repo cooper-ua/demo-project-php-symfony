@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Task index{% endblock %}
+
+{% block body %}
+    <h1>Task list</h1>
+
+    <a class="waves-effect waves-light btn-large green" href="{{ path('task_new') }}">Create new</a>
+
+    <table class="table">
+        <tbody>
+        {% for task in tasks %}
+            <tr>
+                <td class="description">
+                    {% if task.finished %}
+                        <span class="finished">{{ task.description }}</span>
+                    {% else %}
+                        <span>{{ task.description }}</span>
+                    {% endif %}
+                </td>
+                <td class="actions">
+                    {% if task.finished %}
+                        <a class="btn btn-small grey" href="{{ path('task_reopen', {'id': task.id}) }}">Reopen</a>
+                    {% else %}
+                        <a class="btn btn-small" href="{{ path('task_finish', {'id': task.id}) }}">Finish</a>
+                    {% endif %}
+                    <a class="btn btn-small red" href="{{ path('task_delete', {'id': task.id}) }}">delete</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="2">No tasks...</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
