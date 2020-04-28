@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Task;
 use App\Form\TaskType;
+use App\Service\TaskService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,29 +15,24 @@ class TaskController extends AbstractController
     /**
      * @Route("/", name="task_index", methods={"GET"})
      */
-    public function index(): Response
+    public function index(TaskService $taskService): Response
     {
-        $em = $this->getDoctrine()->getManager();
-        $tasks = $em->getRepository(Task::class)->findBy([], ['created' => 'DESC']);
-
         return $this->render('task/index.html.twig', [
-            'tasks' => $tasks,
+            'tasks' => $taskService->getAllTasks()
         ]);
     }
 
     /**
      * @Route("/new", name="task_new", methods={"GET","POST"})
      */
-    public function new(Request $request): Response
+    public function new(Request $request, TaskService $taskService): Response
     {
         $task = new Task();
         $form = $this->createForm(TaskType::class, $task);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->persist($task);
-            $entityManager->flush();
+            $taskService->create($task);
 
             return $this->redirectToRoute('task_index');
         }
@@ -50,11 +46,9 @@ class TaskController extends AbstractController
      /**
      * @Route("/delete/{id}", name="task_delete", methods={"GET"})
      */
-    public function delete(Request $request, Task $task): Response
+    public function delete(Request $request, Task $task, TaskService $taskService): Response
     {
-        $entityManager = $this->getDoctrine()->getManager();
-        $entityManager->remove($task);
-        $entityManager->flush();
+        $taskService->delete($task);
 
         return $this->redirectToRoute('task_index');
     }
@@ -62,12 +56,9 @@ class TaskController extends AbstractController
     /**
      * @Route("/finish/{id}", name="task_finish", methods={"GET"})
      */
-    public function finish(Request $request, Task $task): Response
+    public function finish(Request $request, Task $task, TaskService $taskService): Response
     {
-        $entityManager = $this->getDoctrine()->getManager();
-        $task->setFinished(true);
-        $entityManager->persist($task);
-        $entityManager->flush();
+        $taskService->finish($task);
 
         return $this->redirectToRoute('task_index');
     }
@@ -75,12 +66,9 @@ class TaskController extends AbstractController
     /**
      * @Route("/reopen/{id}", name="task_reopen", methods={"GET"})
      */
-    public function reopen(Request $request, Task $task): Response
+    public function reopen(Request $request, Task $task, TaskService $taskService): Response
     {
-        $entityManager = $this->getDoctrine()->getManager();
-        $task->setFinished(false);
-        $entityManager->persist($task);
-        $entityManager->flush();
+        $taskService->reopen($task);
 
         return $this->redirectToRoute('task_index');
     }
