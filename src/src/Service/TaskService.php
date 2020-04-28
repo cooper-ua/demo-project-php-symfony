@@ -4,6 +4,7 @@ namespace App\Service;
 
 use \Doctrine\ORM\EntityManager;
 use \App\Entity\Task;
+use Doctrine\ORM\EntityManagerInterface;
 
 class TaskService
 {
@@ -11,9 +12,9 @@ class TaskService
 
     /**
      * TaskService constructor.
-     * @param EntityManager $entityManager
+     * @param EntityManagerInterface $entityManager
      */
-    public function __construct(EntityManager $entityManager)
+    public function __construct(EntityManagerInterface $entityManager)
     {
         $this->entityManager = $entityManager;
     }
